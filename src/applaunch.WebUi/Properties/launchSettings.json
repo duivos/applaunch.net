@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "applaunch.WebUi (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "applaunch.WebUi (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
