@@ -14,7 +14,7 @@
     <MicaBackdrop />
   </Window.SystemBackdrop>
 
-  <Grid Padding="14" Background="{StaticResource PrimaryBrush}">
+  <Grid Padding="14">
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
       <RowDefinition Height="*" />
@@ -30,12 +30,7 @@
       KeyDown="SearchBox_KeyDown"
     />
 
-    <ListView
-      x:Name="ResultList"
-      Grid.Row="1"
-      Margin="0,10,0,0"
-      ItemsSource="{x:Bind VisibleApps}"
-    >
+    <ListView x:Name="ResultList" Grid.Row="1" Margin="0,10,0,0" ItemsSource="{x:Bind VisibleApps}">
       <ListView.ItemTemplate>
         <DataTemplate x:DataType="models:AppItem">
           <TextBlock Text="{x:Bind Name}" FontSize="16" Padding="5,8" />

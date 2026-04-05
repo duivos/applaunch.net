@@ -10,8 +10,6 @@
       <ResourceDictionary.MergedDictionaries>
         <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
       </ResourceDictionary.MergedDictionaries>
-      <SolidColorBrush x:Key="PrimaryBrush" Color="#E6D5F0" />
-      <SolidColorBrush x:Key="SecondaryBrush" Color="#D9C9E8" />
     </ResourceDictionary>
   </Application.Resources>
 </Application>
