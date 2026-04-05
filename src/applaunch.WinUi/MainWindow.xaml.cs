@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
@@ -7,7 +8,6 @@ using applaunch.WinUi.Abstractions;
 using applaunch.WinUi.Models;
 using applaunch.WinUi.Services;
 using Microsoft.UI.Composition.SystemBackdrops;
-using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -59,7 +59,7 @@ public sealed partial class MainWindow : Window
     {
         try
         {
-            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+            nint hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
             _hotkeyManager.Register(hwnd, ShowWindow);
         }
         catch (Exception ex)
@@ -81,12 +81,17 @@ public sealed partial class MainWindow : Window
 
     private void UpdateVisibleApps(string query)
     {
-        var matches = _searchEngine.Search(_appScanner.AllApps, query);
+        List<AppItem> matches = _searchEngine.Search(_appScanner.AllApps, query);
 
         VisibleApps.Clear();
-        foreach (var match in matches)
+        foreach (AppItem match in matches)
         {
             VisibleApps.Add(match);
+        }
+
+        if (VisibleApps.Count > 0)
+        {
+            ResultList.SelectedIndex = 0;
         }
 
         Debug.WriteLine($"Found {matches.Count} matches for '{query}'");
@@ -142,8 +147,9 @@ public sealed partial class MainWindow : Window
     private void LaunchAppAndHide(AppItem app)
     {
         _appLauncher.Launch(app);
-        this.AppWindow.Hide();
+        VisibleApps.Clear();
         SearchBox.Text = string.Empty;
+        this.AppWindow.Hide();
     }
 
     private void ShowWindow()

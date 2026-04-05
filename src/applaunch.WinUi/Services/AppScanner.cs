@@ -12,25 +12,29 @@ namespace applaunch.WinUi.Services;
 public class AppScanner : IAppScanner
 {
     private readonly List<AppItem> _allApps = [];
+    private readonly HashSet<string> _addedAppNames = [];
 
     public IReadOnlyList<AppItem> AllApps => _allApps.AsReadOnly();
 
     public void Scan()
     {
-        foreach (var folder in AppConfig.ProgramPaths)
+        _addedAppNames.Clear();
+
+        foreach (string folder in AppConfig.ProgramPaths)
         {
             if (!Directory.Exists(folder))
                 continue;
 
             string[] shortcuts = Directory.GetFiles(folder, "*.lnk", SearchOption.AllDirectories);
 
-            foreach (var path in shortcuts)
+            foreach (string path in shortcuts)
             {
-                var name = Path.GetFileNameWithoutExtension(path);
+                string name = Path.GetFileNameWithoutExtension(path);
 
                 if (ShouldExclude(name))
                     continue;
 
+                _addedAppNames.Add(name);
                 _allApps.Add(new AppItem { Name = name, Path = path });
             }
         }
@@ -38,10 +42,18 @@ public class AppScanner : IAppScanner
         Debug.WriteLine($"Finished scanning. Loaded {_allApps.Count} local apps.");
     }
 
-    private static bool ShouldExclude(string name)
+    private bool ShouldExclude(string name)
     {
-        return AppConfig.ExcludeKeywords.Any(keyword =>
+        return IsExcludedByKeyword(name) || IsDuplicate(name);
+    }
+
+    private static bool IsExcludedByKeyword(string name) =>
+        AppConfig.ExcludeKeywords.Any(keyword =>
             name.Contains(keyword, StringComparison.CurrentCultureIgnoreCase)
         );
+
+    private bool IsDuplicate(string name)
+    {
+        return _addedAppNames.Contains(name);
     }
 }

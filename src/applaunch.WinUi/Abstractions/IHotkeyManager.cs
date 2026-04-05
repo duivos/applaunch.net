@@ -1,5 +1,4 @@
 using System;
-using applaunch.WinUi.Models;
 
 namespace applaunch.WinUi.Abstractions;
 

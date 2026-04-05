@@ -27,7 +27,7 @@ namespace applaunch.WinUi
 
         private static IServiceProvider ConfigureServices()
         {
-            var services = new ServiceCollection();
+            ServiceCollection services = new ServiceCollection();
             services.AddAppServices();
             return services.BuildServiceProvider();
         }
