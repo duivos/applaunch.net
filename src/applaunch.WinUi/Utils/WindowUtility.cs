@@ -1,39 +1,41 @@
+using applaunch.WinUi.Config;
 using Microsoft.UI.Windowing;
 using Windows.Graphics;
 
-namespace applaunch.WinUi.Services;
+namespace applaunch.WinUi.Utils;
 
-public static class WindowManager
+public static class WindowUtility
 {
-    private const int WindowWidth = 640;
-    private const int WindowHeight = 320;
-
-    public static void Setup(AppWindow appWindow)
+    public static void Setup(AppWindow appWindow, WindowSettings windowSettings)
     {
-        SetBorderAndTitleBar(appWindow);
-        Resize(appWindow);
-        Center(appWindow);
+        SetBorderAndTitleBar(appWindow, windowSettings);
+        Resize(appWindow, windowSettings);
+
+        if (windowSettings.Centered)
+        {
+            Center(appWindow);
+        }
     }
 
-    private static void SetBorderAndTitleBar(AppWindow appWindow)
+    private static void SetBorderAndTitleBar(AppWindow appWindow, WindowSettings settings)
     {
         OverlappedPresenter? presenter = appWindow.Presenter as OverlappedPresenter;
         if (presenter != null)
         {
             presenter.SetBorderAndTitleBar(false, false);
-            presenter.IsAlwaysOnTop = true;
+            presenter.IsAlwaysOnTop = settings.AlwaysOnTop;
         }
     }
 
-    private static void Resize(AppWindow appWindow)
+    private static void Resize(AppWindow appWindow, WindowSettings settings)
     {
         appWindow.MoveAndResize(
             new RectInt32
             {
                 X = 0,
                 Y = 0,
-                Width = WindowWidth,
-                Height = WindowHeight,
+                Width = settings.Width,
+                Height = settings.Height,
             }
         );
     }
