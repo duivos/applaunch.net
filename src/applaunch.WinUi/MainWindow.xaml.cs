@@ -1,12 +1,12 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using applaunch.WinUi.Abstractions;
+using applaunch.WinUi.Config;
 using applaunch.WinUi.Models;
-using applaunch.WinUi.Services;
+using applaunch.WinUi.Utils;
 using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -16,12 +16,14 @@ namespace applaunch.WinUi;
 
 public sealed partial class MainWindow : Window
 {
-    public ObservableCollection<AppItem> VisibleApps { get; } = [];
+    public ObservableCollection<AppItem> VisibleApps { get; }
 
     private readonly IAppScanner _appScanner;
-    private readonly IAppSearchEngine _searchEngine;
     private readonly IAppLauncher _appLauncher;
-    private readonly IHotkeyManager _hotkeyManager;
+    private readonly IHotkeyService _hotkeyManager;
+    private readonly IAppSearchService _searchService;
+    private readonly IAppNavigationService _navigationService;
+    private readonly AppConfig _config;
 
     public MainWindow(IServiceProvider serviceProvider)
     {
@@ -30,15 +32,26 @@ public sealed partial class MainWindow : Window
         _appScanner =
             serviceProvider.GetService(typeof(IAppScanner)) as IAppScanner
             ?? throw new InvalidOperationException("IAppScanner not found");
-        _searchEngine =
-            serviceProvider.GetService(typeof(IAppSearchEngine)) as IAppSearchEngine
-            ?? throw new InvalidOperationException("IAppSearchEngine not found");
         _appLauncher =
             serviceProvider.GetService(typeof(IAppLauncher)) as IAppLauncher
             ?? throw new InvalidOperationException("IAppLauncher not found");
         _hotkeyManager =
-            serviceProvider.GetService(typeof(IHotkeyManager)) as IHotkeyManager
+            serviceProvider.GetService(typeof(IHotkeyService)) as IHotkeyService
             ?? throw new InvalidOperationException("IHotkeyManager not found");
+        _searchService =
+            serviceProvider.GetService(typeof(IAppSearchService)) as IAppSearchService
+            ?? throw new InvalidOperationException("IAppSearchService not found");
+        _navigationService =
+            serviceProvider.GetService(typeof(IAppNavigationService)) as IAppNavigationService
+            ?? throw new InvalidOperationException("IAppNavigationService not found");
+        _config =
+            serviceProvider.GetService(typeof(AppConfig)) as AppConfig
+            ?? throw new InvalidOperationException("AppConfig not found");
+
+        VisibleApps =
+            serviceProvider.GetService(typeof(ObservableCollection<AppItem>))
+                as ObservableCollection<AppItem>
+            ?? throw new InvalidOperationException("ObservableCollection<AppItem> not found");
 
         SetupUI();
         RegisterHotkey();
@@ -51,7 +64,7 @@ public sealed partial class MainWindow : Window
         SystemBackdrop = new MicaBackdrop() { Kind = MicaKind.BaseAlt };
 
         ExtendsContentIntoTitleBar = true;
-        WindowManager.Setup(this.AppWindow);
+        WindowUtility.Setup(this.AppWindow, _config.WindowSettings);
         SetTitleBar(null);
     }
 
@@ -70,31 +83,17 @@ public sealed partial class MainWindow : Window
 
     private void ScanAppsAsync()
     {
-        Task.Run(() => _appScanner.Scan());
+        Task.Run(_appScanner.Scan);
     }
 
     private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
     {
         string query = ((TextBox)sender).Text.Trim().ToLower();
-        UpdateVisibleApps(query);
-    }
-
-    private void UpdateVisibleApps(string query)
-    {
-        List<AppItem> matches = _searchEngine.Search(_appScanner.AllApps, query);
-
-        VisibleApps.Clear();
-        foreach (AppItem match in matches)
-        {
-            VisibleApps.Add(match);
-        }
-
+        _searchService.UpdateSearch(query);
         if (VisibleApps.Count > 0)
         {
             ResultList.SelectedIndex = 0;
         }
-
-        Debug.WriteLine($"Found {matches.Count} matches for '{query}'");
     }
 
     private void SearchBox_KeyDown(object sender, Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e)
@@ -123,25 +122,20 @@ public sealed partial class MainWindow : Window
         if (itemCount == 0)
             return;
 
-        switch (e.Key)
+        bool moveDown =
+            e.Key == Windows.System.VirtualKey.Down || e.Key == Windows.System.VirtualKey.Tab;
+        int newIndex = _navigationService.GetNextIndex(
+            ResultList.SelectedIndex,
+            itemCount,
+            moveDown
+        );
+
+        if (newIndex >= 0)
         {
-            case Windows.System.VirtualKey.Tab:
-            case Windows.System.VirtualKey.Down:
-                ResultList.SelectedIndex =
-                    ResultList.SelectedIndex < itemCount - 1 ? ResultList.SelectedIndex + 1 : 0;
-                break;
-
-            case Windows.System.VirtualKey.Up:
-                ResultList.SelectedIndex =
-                    ResultList.SelectedIndex > 0 ? ResultList.SelectedIndex - 1 : itemCount - 1;
-                break;
-
-            default:
-                return;
+            ResultList.SelectedIndex = newIndex;
+            ResultList.ScrollIntoView(ResultList.SelectedItem);
+            e.Handled = true;
         }
-
-        ResultList.ScrollIntoView(ResultList.SelectedItem);
-        e.Handled = true;
     }
 
     private void LaunchAppAndHide(AppItem app)
