@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 
@@ -29,14 +27,8 @@ namespace applaunch.WinUi
 
         private static IServiceProvider ConfigureServices()
         {
-            string configPath = Path.Combine(AppContext.BaseDirectory, "appsettings.json");
-
-            IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddJsonFile(configPath, optional: false, reloadOnChange: true)
-                .Build();
-
-            var services = new ServiceCollection();
-            services.AddAppServices(configuration);
+            ServiceCollection services = new ServiceCollection();
+            services.AddAppServices();
             return services.BuildServiceProvider();
         }
 

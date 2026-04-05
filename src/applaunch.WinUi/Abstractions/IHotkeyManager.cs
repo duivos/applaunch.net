@@ -2,7 +2,7 @@ using System;
 
 namespace applaunch.WinUi.Abstractions;
 
-public interface IHotkeyService : IDisposable
+public interface IHotkeyManager : IDisposable
 {
     void Register(IntPtr hwnd, Action onHotkeyPressed);
     void Unregister();

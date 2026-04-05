@@ -5,9 +5,8 @@ using applaunch.WinUi.Abstractions;
 
 namespace applaunch.WinUi.Services;
 
-public partial class HotkeyService : IHotkeyService
+public partial class HotkeyManager : IHotkeyManager
 {
-    // TODO: Make hotkey configurable
     private const int HOTKEY_ID = 9000;
     private const uint MOD_ALT = 0x0001;
     private const uint MOD_WIN = 0x0008;

@@ -5,7 +5,7 @@ using applaunch.WinUi.Models;
 
 namespace applaunch.WinUi.Services;
 
-public class AppLaunchService : IAppLauncher
+public class AppLauncher : IAppLauncher
 {
     public void Launch(AppItem app)
     {

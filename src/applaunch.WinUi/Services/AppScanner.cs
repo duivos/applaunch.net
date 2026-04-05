@@ -13,20 +13,14 @@ public class AppScanner : IAppScanner
 {
     private readonly List<AppItem> _allApps = [];
     private readonly HashSet<string> _addedAppNames = [];
-    private readonly AppConfig _config;
 
     public IReadOnlyList<AppItem> AllApps => _allApps.AsReadOnly();
-
-    public AppScanner(AppConfig config)
-    {
-        _config = config;
-    }
 
     public void Scan()
     {
         _addedAppNames.Clear();
 
-        foreach (string folder in _config.ProgramPaths)
+        foreach (string folder in AppConfig.ProgramPaths)
         {
             if (!Directory.Exists(folder))
                 continue;
@@ -53,12 +47,10 @@ public class AppScanner : IAppScanner
         return IsExcludedByKeyword(name) || IsDuplicate(name);
     }
 
-    private bool IsExcludedByKeyword(string name)
-    {
-        return _config.ExcludeKeywords.Any(keyword =>
+    private static bool IsExcludedByKeyword(string name) =>
+        AppConfig.ExcludeKeywords.Any(keyword =>
             name.Contains(keyword, StringComparison.CurrentCultureIgnoreCase)
         );
-    }
 
     private bool IsDuplicate(string name)
     {

@@ -6,7 +6,7 @@ using applaunch.WinUi.Models;
 
 namespace applaunch.WinUi.Services;
 
-public class AppSearchEngine : ISearchEngine<AppItem>
+public class AppSearchEngine : IAppSearchEngine
 {
     public List<AppItem> Search(IEnumerable<AppItem> apps, string query)
     {
