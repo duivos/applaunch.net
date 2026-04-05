@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace applaunch.WebUi.Config;
+namespace applaunch.WinUi.Config;
 
 internal static class AppConfig
 {
@@ -10,5 +10,5 @@ internal static class AppConfig
         Environment.GetFolderPath(Environment.SpecialFolder.Programs),
     ];
 
-    public static string[] ExcludeKeywords = ["uninstall", "readme", "help"];
+    public static string[] ExcludeKeywords = ["uninstall"];
 }

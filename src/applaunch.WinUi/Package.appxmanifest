@@ -16,8 +16,8 @@
   <mp:PhoneIdentity PhoneProductId="6f5b898e-5b9f-473d-afec-a2c0244b15d4" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>applaunch.WebUi</DisplayName>
-    <PublisherDisplayName>artya</PublisherDisplayName>
+    <DisplayName>applaunch.WinUi</DisplayName>
+    <PublisherDisplayName>duivos</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
@@ -35,8 +35,8 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="applaunch.WebUi"
-        Description="applaunch.WebUi"
+        DisplayName="applaunch.WinUi"
+        Description="applaunch.WinUi"
         BackgroundColor="transparent"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png">
