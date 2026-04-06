@@ -9,12 +9,12 @@ namespace applaunch.WinUi.Services;
 
 public class AppSearchService : IAppSearchService
 {
-    private readonly IAppScanner _appScanner;
+    private readonly IScanner<AppItem> _appScanner;
     private readonly ISearchEngine<AppItem> _searchEngine;
     private readonly ObservableCollection<AppItem> _visibleApps;
 
     public AppSearchService(
-        IAppScanner appScanner,
+        IScanner<AppItem> appScanner,
         ISearchEngine<AppItem> searchEngine,
         ObservableCollection<AppItem> visibleApps
     )
@@ -26,7 +26,7 @@ public class AppSearchService : IAppSearchService
 
     public void UpdateSearch(string query)
     {
-        List<AppItem> matches = _searchEngine.Search(_appScanner.AllApps, query);
+        List<AppItem> matches = _searchEngine.Search(_appScanner.AllObjects, query);
 
         _visibleApps.Clear();
         foreach (AppItem match in matches)

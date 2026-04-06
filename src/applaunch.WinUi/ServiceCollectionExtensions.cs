@@ -26,7 +26,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IAppLauncher, AppLaunchService>();
         services.AddSingleton<IAppSearchService, AppSearchService>();
         services.AddSingleton<IAppNavigationService, AppNavigationService>();
-        services.AddSingleton<IAppScanner, AppScanner>();
+        services.AddSingleton<IScanner<AppItem>, AppScanner>();
 
         return services;
     }

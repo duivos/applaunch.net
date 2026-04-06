@@ -18,7 +18,7 @@ public sealed partial class MainWindow : Window
 {
     public ObservableCollection<AppItem> VisibleApps { get; }
 
-    private readonly IAppScanner _appScanner;
+    private readonly IScanner<AppItem> _appScanner;
     private readonly IAppLauncher _appLauncher;
     private readonly IHotkeyService _hotkeyManager;
     private readonly IAppSearchService _searchService;
@@ -30,7 +30,7 @@ public sealed partial class MainWindow : Window
         InitializeComponent();
 
         _appScanner =
-            serviceProvider.GetService(typeof(IAppScanner)) as IAppScanner
+            serviceProvider.GetService(typeof(IScanner<AppItem>)) as IScanner<AppItem>
             ?? throw new InvalidOperationException("IAppScanner not found");
         _appLauncher =
             serviceProvider.GetService(typeof(IAppLauncher)) as IAppLauncher
