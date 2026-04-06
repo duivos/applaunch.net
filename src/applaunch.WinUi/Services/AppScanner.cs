@@ -9,13 +9,13 @@ using applaunch.WinUi.Models;
 
 namespace applaunch.WinUi.Services;
 
-public class AppScanner : IAppScanner
+public class AppScanner : IScanner<AppItem>
 {
     private readonly List<AppItem> _allApps = [];
     private readonly HashSet<string> _addedAppNames = [];
     private readonly AppConfig _config;
 
-    public IReadOnlyList<AppItem> AllApps => _allApps.AsReadOnly();
+    public IReadOnlyList<AppItem> AllObjects => _allApps.AsReadOnly();
 
     public AppScanner(AppConfig config)
     {
